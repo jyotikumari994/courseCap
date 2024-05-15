@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToDo List</title>
+    <style>
+      /* CSS Styles for ToDo List */
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .todo-container {
+        max-width: 400px;
+        margin: 0 auto;
+      }
+      .todo-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+      .todo-item input[type="checkbox"] {
+        margin-right: 10px;
+      }
+      .completed {
+        text-decoration: line-through;
+        color: #888;
+      }
+      .delete-btn {
+        background-color: #ff0000;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-left: 10px;
+      }
+      .delete-btn:hover {
+        background-color: #cc0000;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="todo-container"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+      function ToDoList() {
+        const [items, setItems] = React.useState([]);
+        const [text, setText] = React.useState('');
+
+        function handleChange(event) {
+          setText(event.target.value);
+        }
+
+        function handleSubmit(event) {
+          event.preventDefault();
+          if (!text.trim()) return; // Prevent adding empty items
+          setItems([...items, { id: Date.now(), text: text, completed: false }]);
+          setText(''); // Clear input field after adding item
+        }
+
+        function deleteItem(id) {
+          setItems(items.filter(item => item.id !== id));
+        }
+
+        function toggleCompleted(id) {
+          setItems(
+            items.map(item =>
+              item.id === id ? { ...item, completed: !item.completed } : item
+            )
+          );
+        }
+
+        return (
+          <div>
+            <h2>To-Do List</h2>
+            <form onSubmit={handleSubmit}>
+              <input type="text" value={text} onChange={handleChange} placeholder="Enter task..." />
+              <button type="submit">Add Task</button>
+            </form>
+            <ul>
+              {items.map(item => (
+                <li key={item.id} className="todo-item">
+                  <input
+                    type="checkbox"
+                    checked={item.completed}
+                    onChange={() => toggleCompleted(item.id)}
+                  />
+                  <span className={item.completed ? "completed" : ""}>{item.text}</span>
+                  <button className="delete-btn" onClick={() => deleteItem(item.id)}>Delete</button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+
+      ReactDOM.render(<ToDoList />, document.getElementById('root'));
+    </script>
+  </body>
+</html>
